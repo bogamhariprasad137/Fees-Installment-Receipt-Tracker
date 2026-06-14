@@ -1,0 +1,46 @@
+# Dependency directories
+node_modules/
+frontend/node_modules/
+
+# Python cache & build directories
+__pycache__/
+*.pyc
+.venv/
+venv/
+ENV/
+env/
+backend/venv/
+backend/.venv/
+
+# Vite production build
+frontend/dist/
+dist/
+
+# Local MySQL Database data files
+database/mysql_data/
+
+# Environment configurations and secret keys
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.secret
+*.pem
+*.key
+
+# Temporary test scripts
+brain/verify_api.py
+verify_api.py
+check_seed.py
+
+# Editor and OS settings
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
