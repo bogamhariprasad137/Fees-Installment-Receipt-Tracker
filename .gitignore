@@ -18,6 +18,7 @@ dist/
 
 # Local MySQL Database data files
 database/mysql_data/
+database/data/
 
 # Environment configurations and secret keys
 .env
