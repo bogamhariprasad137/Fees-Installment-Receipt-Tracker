@@ -30,7 +30,17 @@ def get_all_students():
                        f.paid_amount, 
                        f.pending_amount, 
                        f.due_date,
-                       f.status AS fee_status 
+                       CASE 
+                           WHEN f.status = 'paid' THEN 'paid'
+                           WHEN EXISTS (
+                               SELECT 1 FROM installments i 
+                               WHERE i.fee_id = f.fee_id 
+                                 AND i.status != 'paid' 
+                                 AND i.due_date < CURRENT_DATE()
+                           ) THEN 'overdue'
+                           WHEN f.due_date < CURRENT_DATE() AND f.pending_amount > 0 THEN 'overdue'
+                           ELSE f.status 
+                       END AS fee_status 
                 FROM students s 
                 LEFT JOIN fees f ON s.student_id = f.student_id
                 ORDER BY s.student_id DESC
@@ -78,7 +88,17 @@ def get_student_by_id(student_id):
                        f.paid_amount, 
                        f.pending_amount, 
                        f.due_date,
-                       f.status AS fee_status 
+                       CASE 
+                           WHEN f.status = 'paid' THEN 'paid'
+                           WHEN EXISTS (
+                               SELECT 1 FROM installments i 
+                               WHERE i.fee_id = f.fee_id 
+                                 AND i.status != 'paid' 
+                                 AND i.due_date < CURRENT_DATE()
+                           ) THEN 'overdue'
+                           WHEN f.due_date < CURRENT_DATE() AND f.pending_amount > 0 THEN 'overdue'
+                           ELSE f.status 
+                       END AS fee_status 
                 FROM students s 
                 LEFT JOIN fees f ON s.student_id = f.student_id
                 WHERE s.student_id = %s
@@ -100,9 +120,19 @@ def get_student_by_id(student_id):
             if fee_id:
                 cursor.execute("SELECT * FROM installments WHERE fee_id = %s ORDER BY installment_number", (fee_id,))
                 installments = cursor.fetchall()
+                today = datetime.date.today()
                 for inst in installments:
-                    if isinstance(inst.get('due_date'), (datetime.date, datetime.datetime)):
-                        inst['due_date'] = inst['due_date'].isoformat()
+                    due_date = inst.get('due_date')
+                    if isinstance(due_date, (datetime.date, datetime.datetime)):
+                        due_date_obj = due_date.date() if isinstance(due_date, datetime.datetime) else due_date
+                        if inst['status'] != 'paid' and due_date_obj < today:
+                            inst['status'] = 'overdue'
+                        inst['due_date'] = due_date.isoformat()
+                    elif isinstance(due_date, str):
+                        due_date_obj = datetime.date.fromisoformat(due_date)
+                        if inst['status'] != 'paid' and due_date_obj < today:
+                            inst['status'] = 'overdue'
+                    
                     if isinstance(inst.get('payment_date'), (datetime.date, datetime.datetime)):
                         inst['payment_date'] = inst['payment_date'].isoformat()
                         
@@ -172,7 +202,17 @@ def get_students_by_parent_email(email):
                            f.paid_amount, 
                            f.pending_amount, 
                            f.due_date,
-                           f.status AS fee_status 
+                           CASE 
+                               WHEN f.status = 'paid' THEN 'paid'
+                               WHEN EXISTS (
+                                   SELECT 1 FROM installments i 
+                                   WHERE i.fee_id = f.fee_id 
+                                     AND i.status != 'paid' 
+                                     AND i.due_date < CURRENT_DATE()
+                               ) THEN 'overdue'
+                               WHEN f.due_date < CURRENT_DATE() AND f.pending_amount > 0 THEN 'overdue'
+                               ELSE f.status 
+                           END AS fee_status 
                     FROM students s 
                     LEFT JOIN fees f ON s.student_id = f.student_id
                     WHERE s.student_id = %s
@@ -193,9 +233,19 @@ def get_students_by_parent_email(email):
                 if fee_id:
                     cursor.execute("SELECT * FROM installments WHERE fee_id = %s ORDER BY installment_number", (fee_id,))
                     installments = cursor.fetchall()
+                    today = datetime.date.today()
                     for inst in installments:
-                        if isinstance(inst.get('due_date'), (datetime.date, datetime.datetime)):
-                            inst['due_date'] = inst['due_date'].isoformat()
+                        due_date = inst.get('due_date')
+                        if isinstance(due_date, (datetime.date, datetime.datetime)):
+                            due_date_obj = due_date.date() if isinstance(due_date, datetime.datetime) else due_date
+                            if inst['status'] != 'paid' and due_date_obj < today:
+                                inst['status'] = 'overdue'
+                            inst['due_date'] = due_date.isoformat()
+                        elif isinstance(due_date, str):
+                            due_date_obj = datetime.date.fromisoformat(due_date)
+                            if inst['status'] != 'paid' and due_date_obj < today:
+                                inst['status'] = 'overdue'
+                        
                         if isinstance(inst.get('payment_date'), (datetime.date, datetime.datetime)):
                             inst['payment_date'] = inst['payment_date'].isoformat()
                             

@@ -36,8 +36,12 @@ def download_report():
             """)
             fees_summary = cursor.fetchone()
             
-            # Fetch total overdue sum from installments
-            cursor.execute("SELECT SUM(amount) as total_overdue FROM installments WHERE status = 'overdue'")
+            # Fetch total overdue sum from installments dynamically (due date in past and not paid)
+            cursor.execute("""
+                SELECT SUM(amount) as total_overdue 
+                FROM installments 
+                WHERE status != 'paid' AND due_date < CURRENT_DATE()
+            """)
             total_overdue_row = cursor.fetchone()
             total_overdue = float(total_overdue_row['total_overdue'] or 0.0)
             
@@ -76,7 +80,7 @@ def download_report():
             
             # 2. Gather specific details based on report type
             if report_type == "arrears":
-                # Fetch overdue accounts details
+                # Fetch overdue accounts details dynamically (due date in past and not paid)
                 cursor.execute("""
                     SELECT 
                         s.student_name, 
@@ -86,7 +90,7 @@ def download_report():
                     FROM students s
                     JOIN fees f ON s.student_id = f.student_id
                     JOIN installments i ON f.fee_id = i.fee_id
-                    WHERE i.status = 'overdue'
+                    WHERE i.status != 'paid' AND i.due_date < CURRENT_DATE()
                     GROUP BY s.student_id, s.student_name, s.parent_name, f.pending_amount
                 """)
                 arrears_rows = cursor.fetchall()

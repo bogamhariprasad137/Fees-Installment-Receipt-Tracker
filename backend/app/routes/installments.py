@@ -25,10 +25,20 @@ def get_installments_by_student_id(student_id):
             """, (student_id,))
             installments = cursor.fetchall()
             
-            # Format dates
+            # Format dates and calculate dynamic status
+            today = datetime.date.today()
             for inst in installments:
-                if isinstance(inst.get('due_date'), (datetime.date, datetime.datetime)):
-                    inst['due_date'] = inst['due_date'].isoformat()
+                due_date = inst.get('due_date')
+                if isinstance(due_date, (datetime.date, datetime.datetime)):
+                    due_date_obj = due_date.date() if isinstance(due_date, datetime.datetime) else due_date
+                    if inst['status'] != 'paid' and due_date_obj < today:
+                        inst['status'] = 'overdue'
+                    inst['due_date'] = due_date.isoformat()
+                elif isinstance(due_date, str):
+                    due_date_obj = datetime.date.fromisoformat(due_date)
+                    if inst['status'] != 'paid' and due_date_obj < today:
+                        inst['status'] = 'overdue'
+                
                 if isinstance(inst.get('payment_date'), (datetime.date, datetime.datetime)):
                     inst['payment_date'] = inst['payment_date'].isoformat()
                     
@@ -106,9 +116,19 @@ def save_installments(fee_id):
             # Fetch and return updated list
             cursor.execute("SELECT * FROM installments WHERE fee_id = %s ORDER BY installment_number", (fee_id,))
             updated_list = cursor.fetchall()
+            today = datetime.date.today()
             for inst in updated_list:
-                if isinstance(inst.get('due_date'), (datetime.date, datetime.datetime)):
-                    inst['due_date'] = inst['due_date'].isoformat()
+                due_date = inst.get('due_date')
+                if isinstance(due_date, (datetime.date, datetime.datetime)):
+                    due_date_obj = due_date.date() if isinstance(due_date, datetime.datetime) else due_date
+                    if inst['status'] != 'paid' and due_date_obj < today:
+                        inst['status'] = 'overdue'
+                    inst['due_date'] = due_date.isoformat()
+                elif isinstance(due_date, str):
+                    due_date_obj = datetime.date.fromisoformat(due_date)
+                    if inst['status'] != 'paid' and due_date_obj < today:
+                        inst['status'] = 'overdue'
+                
                 if isinstance(inst.get('payment_date'), (datetime.date, datetime.datetime)):
                     inst['payment_date'] = inst['payment_date'].isoformat()
                     
