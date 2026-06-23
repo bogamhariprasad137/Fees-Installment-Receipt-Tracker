@@ -33,6 +33,9 @@ function Layout({ children, title, allowedRole }) {
   return (
     <ProtectedRoute allowedRole={allowedRole}>
       <div className="app-container">
+        {mobileOpen && (
+          <div className="sidebar-backdrop" onClick={() => setMobileOpen(false)} />
+        )}
         <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
         <div className="main-content">
           <Header title={title} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />

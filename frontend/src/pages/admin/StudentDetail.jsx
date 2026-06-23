@@ -149,15 +149,7 @@ export default function StudentDetail() {
           </div>
           {fee ? (
             <div>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr",
-                  gap: "1rem",
-                  marginBottom: "1.5rem",
-                  textAlign: "center"
-                }}
-              >
+              <div className="detail-summary-grid">
                 <div style={{ padding: "0.75rem", backgroundColor: "#FFFDF7", border: "1px solid var(--structure-border)", borderRadius: "6px" }}>
                   <div style={{ fontSize: "10px", fontWeight: "700", color: "var(--warm-muted)" }}>TOTAL FEE</div>
                   <div className="mono-data" style={{ fontSize: "16px", fontWeight: "700", marginTop: "0.25rem" }}>

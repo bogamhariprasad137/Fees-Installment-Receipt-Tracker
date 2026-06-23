@@ -238,7 +238,7 @@ export default function FeeManagement() {
       )}
 
       {/* Summary Metrics Row (4 Cards) */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
+      <div className="kpi-grid">
         <div className="card metric-card">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <span className="metric-label">Total Allocated</span>
@@ -295,12 +295,12 @@ export default function FeeManagement() {
       {/* Grid: Search, Table, and Selected Detail Panel */}
       <div className="grid-3" style={{ alignItems: "start" }}>
         {/* Left Side: Student Fee Status Table */}
-        <div className="card" style={{ gridColumn: "span 2 / span 2", padding: "1.5rem" }}>
+        <div className="card fee-ledger-card" style={{ padding: "1.5rem" }}>
           <div style={{ borderBottom: "1px solid var(--structure-border)", paddingBottom: "1rem", marginBottom: "1.5rem" }}>
             <h3 style={{ fontSize: "1.125rem", color: "var(--sidebar-brown)", marginBottom: "1rem" }}>Student Fee Ledgers</h3>
             
             {/* Search and Filters */}
-            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "1rem" }}>
+            <div className="search-filter-grid">
               <div style={{ position: "relative" }}>
                 <Search
                   size={16}
@@ -544,7 +544,7 @@ export default function FeeManagement() {
                       </select>
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", marginBottom: "0.75rem" }}>
+                    <div className="quick-form-grid">
                       <div className="form-group" style={{ marginBottom: 0 }}>
                         <label className="form-label" style={{ fontSize: "11px" }} htmlFor="payment-date-input">Payment Date</label>
                         <input 

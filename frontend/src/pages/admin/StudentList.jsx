@@ -261,13 +261,7 @@ export default function StudentList() {
 
       {/* Filter panel */}
       <div className="card" style={{ padding: "1.25rem", marginBottom: "1.5rem" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "2fr 1fr 1fr",
-            gap: "1rem"
-          }}
-        >
+        <div className="search-filter-grid">
           <div style={{ position: "relative" }}>
             <Search
               size={18}

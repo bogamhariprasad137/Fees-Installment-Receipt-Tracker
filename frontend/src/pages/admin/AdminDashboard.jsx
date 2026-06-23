@@ -344,7 +344,7 @@ ${receipts.map(r => `${r.receipt_number},${r.student_name},${r.amount_paid},${r.
       )}
 
       {/* Metrics Row (4 Cards) */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
+      <div className="kpi-grid">
         <div className="card metric-card">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
             <span className="metric-label">Total Students</span>

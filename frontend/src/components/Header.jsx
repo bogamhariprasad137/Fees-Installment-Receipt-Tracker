@@ -123,7 +123,7 @@ export default function Header({ title, mobileOpen, setMobileOpen }) {
 
       <div className="header-right">
         {currentUser?.role === "parent" && connectedStudents.length > 1 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div className="header-student-switcher" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <label
               htmlFor="student-switcher"
               style={{
@@ -163,6 +163,7 @@ export default function Header({ title, mobileOpen, setMobileOpen }) {
 
         {currentUser?.role === "parent" && activeStudent && (
           <div
+            className="header-student-badge"
             style={{
               display: "flex",
               alignItems: "center",
@@ -186,7 +187,7 @@ export default function Header({ title, mobileOpen, setMobileOpen }) {
           </div>
         )}
 
-        <div style={{ fontSize: "13px", color: "var(--warm-muted)", fontWeight: "500" }}>
+        <div className="header-term" style={{ fontSize: "13px", color: "var(--warm-muted)", fontWeight: "500" }}>
           Term: <strong className="mono-data">2026 Academic Year</strong>
         </div>
 

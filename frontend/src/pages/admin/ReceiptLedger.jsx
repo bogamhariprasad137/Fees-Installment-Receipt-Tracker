@@ -50,7 +50,7 @@ export default function ReceiptLedger() {
 
       {/* Filter Options */}
       <div className="card" style={{ padding: "1.25rem", marginBottom: "1.5rem" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "3fr 1fr", gap: "1rem" }}>
+        <div className="search-action-grid">
           <div style={{ position: "relative" }}>
             <Search
               size={18}
