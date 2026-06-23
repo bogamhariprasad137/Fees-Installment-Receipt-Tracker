@@ -1,5 +1,9 @@
 import os
 import urllib.parse
+from dotenv import load_dotenv
+
+# Load local environment variables if .env file exists
+load_dotenv()
 
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "fees-tracker-secret-key-123456")
