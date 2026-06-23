@@ -40,7 +40,7 @@ def download_report():
             cursor.execute("""
                 SELECT SUM(amount) as total_overdue 
                 FROM installments 
-                WHERE status != 'paid' AND due_date < CURRENT_DATE()
+                WHERE CURRENT_DATE > due_date AND status != 'Paid'
             """)
             total_overdue_row = cursor.fetchone()
             total_overdue = float(total_overdue_row['total_overdue'] or 0.0)
@@ -90,7 +90,7 @@ def download_report():
                     FROM students s
                     JOIN fees f ON s.student_id = f.student_id
                     JOIN installments i ON f.fee_id = i.fee_id
-                    WHERE i.status != 'paid' AND i.due_date < CURRENT_DATE()
+                    WHERE CURRENT_DATE > i.due_date AND i.status != 'Paid'
                     GROUP BY s.student_id, s.student_name, s.parent_name, f.pending_amount
                 """)
                 arrears_rows = cursor.fetchall()

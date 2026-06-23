@@ -68,108 +68,19 @@ export default function AdminDashboard() {
 
   const loadDashboardData = async () => {
     try {
-      const studentList = await api.students.getAll();
+      const [studentList, receiptList, statsRes] = await Promise.all([
+        api.students.getAll(),
+        api.receipts.getAll(),
+        api.admin.getStats()
+      ]);
+      
       setStudents(studentList);
       
-      const receiptList = await api.receipts.getAll();
       const sortedReceipts = [...receiptList].sort((a, b) => new Date(b.payment_date) - new Date(a.payment_date));
       setReceipts(sortedReceipts); // Show full roster of recent logs
 
-      // Calculate Metrics
-      let totalAllocated = 0;
-      let totalCollected = 0;
-      let totalPending = 0;
-      let totalOverdue = 0;
-
-      let admissionAllocated = 0;
-      let admissionCollected = 0;
-      let termAllocated = 0;
-      let termCollected = 0;
-      let daycareAllocated = 0;
-      let daycareCollected = 0;
-
-      studentList.forEach(s => {
-        totalAllocated += Number(s.total_fee) || 0;
-        totalCollected += Number(s.paid_amount) || 0;
-
-        admissionAllocated += Number(s.admission_fee) || 0;
-        termAllocated += Number(s.term_fee) || 0;
-        daycareAllocated += Number(s.daycare_fee) || 0;
-
-        admissionCollected += Number(s.admission_fee_paid) || 0;
-        termCollected += Number(s.term_fee_paid) || 0;
-        daycareCollected += Number(s.daycare_fee_paid) || 0;
-      });
-
-      // Calculate Pending Fees = Total Allocated - Total Collected
-      totalPending = totalAllocated - totalCollected;
-
-      // Fetch installments to calculate overdue
-      const allStudentsInstallments = await Promise.all(
-        studentList.map(s => api.installments.getByFeeId(s.student_id))
-      );
-      const flatInsts = allStudentsInstallments.flat();
-      
-      flatInsts.forEach(inst => {
-        if (inst.status === "overdue") {
-          totalOverdue += Number(inst.amount) || 0;
-        }
-      });
-
-      // Calculate Overdue Accounts Table data
-      const today = new Date();
-      const overdueList = studentList
-        .map(s => {
-          const fee = {
-            fee_id: s.fee_id,
-            status: s.fee_status || "pending",
-            pending_amount: s.pending_amount || 0,
-            due_date: s.due_date
-          };
-          if (!fee.fee_id) return null;
-          const insts = flatInsts.filter(i => i.fee_id === fee.fee_id);
-          const hasOverdueInstallment = insts.some(i => i.status === "overdue");
-          const isOverdue = fee.status.toLowerCase() === "overdue" || hasOverdueInstallment || (fee.pending_amount > 0 && new Date(fee.due_date) < today);
-          
-          if (!isOverdue) return null;
-          
-          // Find oldest due date among overdue items
-          const overdueDates = insts.filter(i => i.status === "overdue").map(i => new Date(i.due_date));
-          if (fee.pending_amount > 0 && new Date(fee.due_date) < today) {
-            overdueDates.push(new Date(fee.due_date));
-          }
-          const oldestDueDate = overdueDates.length > 0 ? new Date(Math.min(...overdueDates)) : new Date(fee.due_date);
-          
-          const daysOverdue = Math.max(0, Math.floor((today - oldestDueDate) / (1000 * 60 * 60 * 24)));
-          
-          return {
-            student_id: s.student_id,
-            student_name: s.student_name,
-            parent_name: s.parent_name,
-            outstanding_amount: fee.pending_amount,
-            due_date: oldestDueDate.toISOString().split('T')[0],
-            days_overdue: daysOverdue,
-            status: "Overdue"
-          };
-        })
-        .filter(x => x !== null)
-        .sort((a, b) => b.days_overdue - a.days_overdue);
-
-      setOverdueAccounts(overdueList);
-
-      setDashboardData({
-        totalStudents: studentList.length,
-        allocated: totalAllocated,
-        collected: totalCollected,
-        pending: totalPending,
-        overdue: totalOverdue,
-        admissionAllocated,
-        admissionCollected,
-        termAllocated,
-        termCollected,
-        daycareAllocated,
-        daycareCollected
-      });
+      setOverdueAccounts(statsRes.overdueAccounts);
+      setDashboardData(statsRes.stats);
     } catch (err) {
       console.error("Failed to load dashboard data", err);
     }

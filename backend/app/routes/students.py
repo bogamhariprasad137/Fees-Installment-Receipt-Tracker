@@ -35,10 +35,10 @@ def get_all_students():
                            WHEN EXISTS (
                                SELECT 1 FROM installments i 
                                WHERE i.fee_id = f.fee_id 
-                                 AND i.status != 'paid' 
-                                 AND i.due_date < CURRENT_DATE()
+                                 AND CURRENT_DATE > i.due_date 
+                                 AND i.status != 'Paid'
                            ) THEN 'overdue'
-                           WHEN f.due_date < CURRENT_DATE() AND f.pending_amount > 0 THEN 'overdue'
+                           WHEN CURRENT_DATE > f.due_date AND f.pending_amount > 0 THEN 'overdue'
                            ELSE f.status 
                        END AS fee_status 
                 FROM students s 
@@ -93,10 +93,10 @@ def get_student_by_id(student_id):
                            WHEN EXISTS (
                                SELECT 1 FROM installments i 
                                WHERE i.fee_id = f.fee_id 
-                                 AND i.status != 'paid' 
-                                 AND i.due_date < CURRENT_DATE()
+                                 AND CURRENT_DATE > i.due_date 
+                                 AND i.status != 'Paid'
                            ) THEN 'overdue'
-                           WHEN f.due_date < CURRENT_DATE() AND f.pending_amount > 0 THEN 'overdue'
+                           WHEN CURRENT_DATE > f.due_date AND f.pending_amount > 0 THEN 'overdue'
                            ELSE f.status 
                        END AS fee_status 
                 FROM students s 
@@ -207,10 +207,10 @@ def get_students_by_parent_email(email):
                                WHEN EXISTS (
                                    SELECT 1 FROM installments i 
                                    WHERE i.fee_id = f.fee_id 
-                                     AND i.status != 'paid' 
-                                     AND i.due_date < CURRENT_DATE()
+                                     AND CURRENT_DATE > i.due_date 
+                                     AND i.status != 'Paid'
                                ) THEN 'overdue'
-                               WHEN f.due_date < CURRENT_DATE() AND f.pending_amount > 0 THEN 'overdue'
+                               WHEN CURRENT_DATE > f.due_date AND f.pending_amount > 0 THEN 'overdue'
                                ELSE f.status 
                            END AS fee_status 
                     FROM students s 

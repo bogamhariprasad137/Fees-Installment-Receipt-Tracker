@@ -233,5 +233,14 @@ export const api = {
       });
       return handleResponse(res);
     }
+  },
+  
+  // --- Admin/Dashboard Services ---
+  admin: {
+    getStats: async () => {
+      const headers = await getHeaders(false);
+      const res = await fetch(`${API_BASE}/admin/dashboard-stats`, { headers });
+      return handleResponse(res);
+    }
   }
 };

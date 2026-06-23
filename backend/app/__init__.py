@@ -17,6 +17,7 @@ def create_app():
     from app.routes.receipts import receipts_bp
     from app.routes.reports import reports_bp
     from app.routes.notifications import notifications_bp
+    from app.routes.admin import admin_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(students_bp, url_prefix='/api/students')
@@ -24,6 +25,7 @@ def create_app():
     app.register_blueprint(receipts_bp, url_prefix='/api/receipts')
     app.register_blueprint(reports_bp, url_prefix='/api/reports')
     app.register_blueprint(notifications_bp, url_prefix='/api/notifications')
+    app.register_blueprint(admin_bp, url_prefix='/api/admin')
     
     # Root route for sanity check
     @app.route('/')

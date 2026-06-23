@@ -72,42 +72,19 @@ export default function FeeManagement() {
 
   const loadData = async () => {
     try {
-      const data = await api.students.getAll();
+      const [data, receiptList, statsRes] = await Promise.all([
+        api.students.getAll(),
+        api.receipts.getAll(),
+        api.admin.getStats()
+      ]);
       setStudents(data);
-
-      const receiptList = await api.receipts.getAll();
       setReceipts(receiptList);
 
-      // Math metrics summaries
-      let allocated = 0;
-      let collected = 0;
-      let pending = 0;
-      let overdue = 0;
-
-      data.forEach(s => {
-        allocated += Number(s.total_fee) || 0;
-        collected += Number(s.paid_amount) || 0;
-      });
-
-      // Calculate Pending Fees = Total Allocated - Total Collected
-      pending = allocated - collected;
-
-      // Calculate overdue amount from installments
-      const studentInstsList = await Promise.all(
-        data.map(s => api.installments.getByFeeId(s.student_id))
-      );
-      const flatInsts = studentInstsList.flat();
-      flatInsts.forEach(inst => {
-        if (inst.status === "overdue") {
-          overdue += Number(inst.amount) || 0;
-        }
-      });
-
       setSummaryData({
-        allocated,
-        collected,
-        pending,
-        overdue
+        allocated: statsRes.stats.allocated,
+        collected: statsRes.stats.collected,
+        pending: statsRes.stats.pending,
+        overdue: statsRes.stats.overdue
       });
 
       // Maintain selection state if student is already selected
