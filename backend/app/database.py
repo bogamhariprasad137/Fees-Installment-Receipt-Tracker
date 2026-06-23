@@ -174,6 +174,18 @@ def init_db(app):
                 cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
             print("Database seeding completed.")
             
+        # Ensure 'bogamhari137@gmail.com' exists as admin in the users table
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO users (firebase_uid, email, role) 
+                    VALUES (NULL, 'bogamhari137@gmail.com', 'admin')
+                    ON DUPLICATE KEY UPDATE role = 'admin'
+                """)
+                print("Ensured admin access for bogamhari137@gmail.com in database.")
+        except Exception as admin_err:
+            print(f"Failed to seed admin email: {admin_err}")
+            
         conn.close()
     except Exception as e:
         print(f"ERROR: Failed to initialize/seed database: {e}")
